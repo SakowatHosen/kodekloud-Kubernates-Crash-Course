@@ -192,7 +192,7 @@ kubectl get pods -n vote
 Redis Pod-এর READY যদি 1/1 এবং STATUS Running হয়, তাহলে ঠিক আছে।
 
 
-### worker Deployment 
+### 5- worker Deployment 
 ```bash
 Create new deployment. name: 'worker'
 image: 'dockersamples/examplevotingapp_worker'
@@ -201,7 +201,10 @@ status: 'Running'
 vote namespace-এ worker Deployment তৈরি করুন।
 
 1. YAML file
+```bash
 vi /root/worker-deployment.yaml
+```
+```bash
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -220,21 +223,25 @@ spec:
       containers:
       - name: worker
         image: dockersamples/examplevotingapp_worker
-
+```
 Save:
 
 Esc → :wq → Enter
 
 2. Create করুন
+```bash
 kubectl create -f /root/worker-deployment.yaml
+```
 3. Check করুন
+```bash
 kubectl get deployments -n vote
 kubectl get pods -n vote
+```
 
 worker Pod-এর READY 1/1 এবং STATUS Running হলে ঠিক আছে।
 
 
-### DB
+### 6- DB
 ```bash
 Create new service: 'db'
 
@@ -248,7 +255,10 @@ service endpoint exposes deployment 'db'
 ```
 
 1. YAML file তৈরি করুন
+```bash
 vi /root/db-service.yaml
+```
+```bash
 apiVersion: v1
 kind: Service
 metadata:
@@ -261,21 +271,24 @@ spec:
   ports:
   - port: 5432
     targetPort: 5432
-
+```
 Save করুন:
 
 Esc → :wq → Enter
 
 2. Service তৈরি করুন
+```bash
 kubectl create -f /root/db-service.yaml
+```
 3. Check করুন
+```bash
 kubectl get svc -n vote
 kubectl get endpoints db -n vote
-
+```
 ⚠️ endpoints db যদি <none> দেখায়, তাহলে db Deployment-এর label check করুন:
 
 
-#### db Deployment
+#### 7- db Deployment
 ```bash
 Create new deployment. name: 'db'
 image: 'postgres:15-alpine' and add the env: 'POSTGRES_HOST_AUTH_METHOD=trust'
@@ -286,7 +299,10 @@ status: 'Running'
 ```
 
 1. YAML file
+```bash
 vi /root/db-deployment.yaml
+```
+```bash
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -314,17 +330,20 @@ spec:
       volumes:
       - name: db-data
         emptyDir: {}
-
+```
 Save:
 
 Esc → :wq → Enter
 
 2. Create করুন
+```bash
 kubectl create -f /root/db-deployment.yaml
+```
 3. Check করুন
+```bash
 kubectl get deployment -n vote
 kubectl get pods -n vote
-
+```
 db Pod-এর:
 
 READY   1/1
@@ -337,7 +356,7 @@ DB Service-এর endpoint-ও check করতে পারেন:
 kubectl get endpoints db -n vote
 
 
-### result Deployment
+### 8- result Deployment
 ```bash
 Create new deployment, name: 'result'
 
@@ -346,11 +365,11 @@ image: 'dockersamples/examplevotingapp_result'
 status: 'Running'
 ```
 vote namespace-এ result Deployment তৈরি করুন।
-
+```bash
 vi /root/result-deployment.yaml
-
+```
 এই YAML দিন:
-
+```bash
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -369,21 +388,21 @@ spec:
       containers:
       - name: result
         image: dockersamples/examplevotingapp_result
-
+```
 Save: Esc → :wq → Enter
 
 তারপর:
-
+```bash
 kubectl create -f /root/result-deployment.yaml
-
+```
 Check:
-
+```bash
 kubectl get deployment -n vote
 kubectl get pods -n vote
-
+```
 result Pod-এর READY 1/1 এবং STATUS Running হলে ঠিক আছে।
 
-### result service
+### 9- result service
 ```bash 
 Create a new service: name = result
 
@@ -398,7 +417,10 @@ service endpoint exposes deployment 'result'
 vote namespace-এ result Deployment-এর জন্য NodePort Service তৈরি করুন।
 
 1. YAML তৈরি করুন
+```bash
 vi /root/result-service.yaml
+```
+```bash
 apiVersion: v1
 kind: Service
 metadata:
@@ -412,17 +434,20 @@ spec:
   - port: 8081
     targetPort: 80
     nodePort: 31001
-
+```
 Save:
 
 Esc → :wq → Enter
 
 2. Service তৈরি করুন
+```bash
 kubectl create -f /root/result-service.yaml
+```
 3. Check করুন
+```bash
 kubectl get svc -n vote
 kubectl get endpoints result -n vote
-
+```
 result Service-এর জন্য expected:
 
 8081:31001/TCP
